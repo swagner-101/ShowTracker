@@ -4,10 +4,10 @@ import re
 import sqlite3
 import os
 from bs4 import BeautifulSoup
+from interface import StorageAndAnalyzer
 
 
-
-class HTTPAnalyzer:
+class HTTPAnalyzer(StorageAndAnalyzer):
 	
 	def __init__(self):
 		self.rand = 6
@@ -45,7 +45,7 @@ class HTTPAnalyzer:
 				url_to_next = link['href']
 				break;
 
-		print(url_to_next)
+		return url_to_next
 		
 	def history_scan(self):
 		data_base = self.find_path()
