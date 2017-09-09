@@ -42,7 +42,7 @@ class BackEnd:
 		
 	def find_next(self, show):
 		show._next_address = self._analyzer.find_next_ep(show._next_address)
-		print (show._next_address)
+		print (show._next_address)##switch to return
 
 	
 		
