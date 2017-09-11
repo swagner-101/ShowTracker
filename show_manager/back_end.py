@@ -1,14 +1,22 @@
 from category import Category
 from show import Show
 from HTTP_analyzer import HTTPAnalyzer
+from GUIs_interface import GUIBackEndInterface
 
-class BackEnd:
+class BackEnd(GUIBackEndInterface):
 
 	def __init__(self):
 		self._analyzer = HTTPAnalyzer()
 		self._category_list = dict()
 		self._category_list["General"] = Category("General")
 		self._category_list["New"] = Category("New")
+		self._category_list["fff"] = Category("fff")
+		self._category_list["ggg"] = Category("ggg")
+		self._category_list["gggh"] = Category("gggh")
+		self._category_list["tttt"] = Category("New")
+		self._category_list["gggggg"] = Category("fff")
+		self._category_list["ring"] = Category("ggg")
+		self._category_list["anime"] = Category("gggh")
 		
 		#boolean array for settings
 		self._settings = []
@@ -16,7 +24,9 @@ class BackEnd:
 	#ensure no duplicates
 	#add new category with list of shows
 	def add_category(self, name, shows):
-		self._category_list[name] = Category(name)
+		if name not in self._category_list.keys():
+			self._category_list[name] = Category(name)
+			print("hello")
 		#for show in shows:
 			#self._category_list[name].add_show
 	
