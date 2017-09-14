@@ -10,4 +10,7 @@ class StorageAndAnalyzer:
 	def find_next_ep(self, url): raise NotImplementedError
 	
 	@abstractmethod
+	def find_ep_num(self, url): raise NotImplementedError
+	
+	@abstractmethod
 	def history_scan(self): raise NotImplementedError

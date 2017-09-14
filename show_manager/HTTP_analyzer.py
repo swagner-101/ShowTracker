@@ -16,7 +16,7 @@ class HTTPAnalyzer(StorageAndAnalyzer):
 		#take url up to end of episode number and increment ep number
 		broken_list = re.compile('(ep[i\W]+.*?)([1-9]+)', re.IGNORECASE).split(url)
 		url_to_next =  broken_list[0] + broken_list[1] + str(int(broken_list[2]) + 1)
-	
+
 		u_agent = 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
 		accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
 		al = 'en-US,en;q=0.8'
@@ -34,10 +34,6 @@ class HTTPAnalyzer(StorageAndAnalyzer):
 		}
 		
 		resp = requests.get(url, headers= headers)
-		#print(resp.text)
-		"""http_encoding = resp.encoding if 'charset' in resp.headers.get('content-type', '').lower() else None
-		html_encoding = EncodingDetector.find_declared_encoding(resp.content, is_html=True)
-		encoding = html_encoding or http_encoding"""
 		soup = BeautifulSoup(resp.content, "lxml")
 
 		for link in soup.find_all('a', href=True):
@@ -46,6 +42,12 @@ class HTTPAnalyzer(StorageAndAnalyzer):
 				break;
 
 		return url_to_next
+	
+	def find_ep_num(self, url):
+		broken_list = re.compile('(ep[i\W]+.*?)([1-9]+)', re.IGNORECASE).split(url)
+		url_to_next =  broken_list[0] + broken_list[1] + str(int(broken_list[2]) + 1)
+		
+		return int(broken_list[2])
 		
 	def history_scan(self):
 		data_base = self.find_path()

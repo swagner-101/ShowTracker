@@ -11,25 +11,82 @@ class GUI:
 	
 		def myfunction(event):
 			canvas.configure(scrollregion=canvas.bbox("all"),width=830,height=415)
+		
+		#establish check boxes in addshow frame, changes upon add and delete of category
+		def set_check_boxes():
+			#Set up check boxes in add show fram
+			check_boxes = Frame(add_frame,  width = 400, height = 100, background= 'white')
+			check_boxes.place(x = 20, y = 180)
+		
+			cat_row =0
+			cat_col =0
+			check_dict = dict()
+			var_list = []
+			for category in self.backend._category_list.keys():
+				#if category != "General" and category != "New":
+				check_var = IntVar()
+				check_button = Checkbutton(check_boxes, text = category, \
+					 onvalue = 1, offvalue = 0, height=1, \
+					 width = 15, variable = check_var)
+				check_button.grid(row = cat_row, column = cat_col)
+				check_dict[category] = check_var
+				
+				cat_row += 1
+				if cat_row == 4:
+					cat_col+= 1
+					cat_row = 0
+				if cat_col == 4:
+					break
+					
+				check_dict[category] = check_var
+			return check_dict
 			
-		def data():
-			for i in range(50):
-				Label(frame,text=i).grid(row=i,column=0)
-				Label(frame,text="my text"+str(i)).grid(row=i,column=1)
-				Label(frame,text="..........").grid(row=i,column=2)
+		#function to set up indiviual frame in scrolling section for each category
+		def set_display_widgets():
 
+			grid_x = 0
+			grid_y = 0
+			for category in self.backend._category_list.keys():
+				Label(frame, text = category, font=("Courier", 18, 'bold')).grid(row = grid_x, column = grid_y)
+				temp_x = grid_x
+				flag_full = 0
+				for show in self.backend._category_list[category]._shows:
+					grid_x += 1
+					Label(frame, text = show._title + " episode " + str(show._episode_num)).grid(row = grid_x, column = grid_y)
+					Button(frame, text = "Play", command=lambda: play_show(show)).grid(row = grid_x, column = grid_y+1)
+					Button(frame, text = "Back", command=lambda: back_show(show)).grid(row = grid_x, column = grid_y+2)
+					if (grid_x > (temp_x + 7)) and (grid_y == 3):
+						grid_x += 1
+						grid_y = 0
+						temp_x = grid_x
+						flag_full = 0
+					elif (grid_x > (temp_x + 7)):
+						flag_full = 1
+						grid_y += 3
+						grid_x = temp_x
+					
+				
+				if flag_full == 1:
+					grid_x = temp_x + 9
+				else: 
+					grid_x += 1
+				grid_y = 0
+				
+
+			
+		#set up window 
 		root = Tk()
 		root.geometry("850x450")
 		root.configure(background='white')
 		root.title("Show Tracker")
 		
+		#create main frames
 		banner = Frame(root,  width = 850, height = 30, background= '#260712')
 		scrolling_shows = Frame(root,  width = 850, height = 420, background= 'white')
 		settings_frame = Frame(root,  width = 250, height = 300, highlightbackground="black",\
 		highlightcolor="black", highlightthickness=5, background= 'white')
 		add_frame = Frame(root,  width = 600, height = 300, highlightbackground="black",\
 		highlightcolor="black", highlightthickness=5, background= 'white')
-
 		category_frame = Frame(root,  width = 600, height = 60, highlightbackground="black",\
 		highlightcolor="black", highlightthickness=5, background= 'white')
 		
@@ -88,31 +145,7 @@ class GUI:
 		exit_image = ImageTk.PhotoImage(file = "exit.png")
 		exit_add_button.config(image = exit_image)
 		
-		check_boxes = Frame(add_frame,  width = 400, height = 100, highlightbackground="black",\
-		highlightcolor="black", highlightthickness=5, background= 'white')
-		check_boxes.place(x = 20, y = 180)
-		
-		
-		cat_row =0
-		cat_col =0
-		check_dict = dict()
-		button_list = []
-		var_list = []
-		for category in self.backend._category_list.keys():
-			#if category != "General" and category != "New":
-			check_var = IntVar()
-			check_button = Checkbutton(check_boxes, text = category, \
-                 onvalue = 1, offvalue = 0, height=1, \
-                 width = 15)
-			check_button.grid(row = cat_row, column = cat_col)
-			button_list.append(check_button)
-			check_dict[category] = check_var
-			cat_row += 1
-			if cat_row == 4:
-				cat_col+= 1
-				cat_row = 0
-			#var_list.append(check_var)
-			check_dict[category] = check_var
+		self.check_dict = set_check_boxes()
 		
 		add_show_button = Button(add_frame,text = "Add Show",command=lambda: add_show())
 		add_show_button.place(x=490, y=250)
@@ -142,8 +175,20 @@ class GUI:
 		canvas.pack(side="left")
 		scrollbar.pack(side = "right", fill="y")
 		
+		for i in range(0,37):
+			self.backend.add_show("Adventure Time", "https://www.watchcartoononline.io/adventure-time-season-1-episode-1-slumber-party-panic", ["gggggg"])
+		set_display_widgets()
+
+
 		
+		#raise selected fram and 
 		def raise_frame(frame):
+			#delete entered data from prior screen
+			category_entry.delete(0, END)
+			HTTP_entry.delete(0, END)
+			tag_entry.delete(0, END)
+			self.check_dict = set_check_boxes()
+			
 			frame.tkraise()
 		
 		def settings():
@@ -162,19 +207,29 @@ class GUI:
 			raise_frame(scrolling_shows)
 			
 		def add_show():
-			return None
+			#create list categories from ticked boxes
+			categories = []
+			for category in self.check_dict.keys():
+				if self.check_dict[category].get() == 1:
+					categories.append(category)
+			
+			#add show to list of categories  ticked aswell as general
+			self.backend.add_show(tag_entry.get(), HTTP_entry.get(), categories)
+			exit()
 			
 		def add_category():
 			shows = None
 			self.backend.add_category(category_entry.get(), shows)
-			category_entry.delete(0, END)
+			set_check_boxes()
 			exit()
+			
+		def play_show(show):
+			
 	
 		raise_frame(banner)
 		raise_frame(scrolling_shows)
 		canvas.create_window((0,0),window=frame,anchor='nw')
 		frame.bind("<Configure>",myfunction)
-		data()
 		root.mainloop()
 if __name__ == "__main__":
 
