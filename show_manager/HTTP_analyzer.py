@@ -10,13 +10,12 @@ from interface import StorageAndAnalyzer
 class HTTPAnalyzer(StorageAndAnalyzer):
 	
 	def __init__(self):
-		self.rand = 6
+		return
 		
 	def find_next_ep(self, url):
 		#take url up to end of episode number and increment ep number
 		broken_list = re.compile('(ep[i\W]+.*?)([1-9]+)', re.IGNORECASE).split(url)
-		url_to_next =  broken_list[0] + broken_list[1] + str(int(broken_list[2]) + 1)
-
+		url_to_next_base =  broken_list[0] + broken_list[1] + str(int(broken_list[2]) + 1)
 		u_agent = 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
 		accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
 		al = 'en-US,en;q=0.8'
@@ -36,11 +35,29 @@ class HTTPAnalyzer(StorageAndAnalyzer):
 		resp = requests.get(url, headers= headers)
 		soup = BeautifulSoup(resp.content, "lxml")
 
+		url_to_next = None
 		for link in soup.find_all('a', href=True):
-			if re.match(url_to_next, link['href']):
+			if re.match(url_to_next_base, link['href']):
 				url_to_next = link['href']
 				break;
-
+				
+		if url_to_next == None:
+			broken_list = re.compile('(se[a\W]+.*?)([1-9]+)(.*)(ep[i\W]+.*?)([1-9]+)', re.IGNORECASE).split(url)
+			
+			for i in range(0,5):
+				print(broken_list[i])
+			
+			
+			url_to_next_base =  broken_list[0] + broken_list[1] + str(int(broken_list[2]) + 1)\
+			+ broken_list[3] + broken_list[4] + "1"
+			
+			print(url_to_next_base)
+		
+			for link in soup.find_all('a', href=True):
+				if re.match(url_to_next_base, link['href']):
+					url_to_next = link['href']
+					break;
+			
 		return url_to_next
 	
 	def find_ep_num(self, url):
@@ -68,6 +85,6 @@ class HTTPAnalyzer(StorageAndAnalyzer):
 if __name__ == "__main__":
 
 	analyzer = HTTPAnalyzer();
-	analyzer.find_next_ep("https://www.watchcartoononline.io/star-wars-forces-of-destiny-episode-1-sands-of-jakku")
-	analyzer.history_scan()
+	analyzer.find_next_ep("https://www.watchcartoononline.io/adventure-time-season-8-episode-14-islands-part-8-the-light-cloud")
+	#analyzer.history_scan()
 	#print(path)

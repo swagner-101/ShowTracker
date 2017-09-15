@@ -43,18 +43,31 @@ class GUI:
 			
 		#function to set up indiviual frame in scrolling section for each category
 		def set_display_widgets():
+			for thing in display_widgets:
+				thing.grid_forget()
 
 			grid_x = 0
 			grid_y = 0
 			for category in self.backend._category_list.keys():
-				Label(frame, text = category, font=("Courier", 18, 'bold')).grid(row = grid_x, column = grid_y)
+				label1 = Label(frame, text = category, font=("Courier", 18, 'bold'))
+				display_widgets.append(label1)
+				label1.grid(row = grid_x, column = grid_y)
 				temp_x = grid_x
 				flag_full = 0
 				for show in self.backend._category_list[category]._shows:
 					grid_x += 1
-					Label(frame, text = show._title + " episode " + str(show._episode_num)).grid(row = grid_x, column = grid_y)
-					Button(frame, text = "Play", command=lambda: play_show(show)).grid(row = grid_x, column = grid_y+1)
-					Button(frame, text = "Back", command=lambda: back_show(show)).grid(row = grid_x, column = grid_y+2)
+					label2 = Label(frame, text = show._title + " episode " + str(show._episode_num))
+					button1 = Button(frame, text = "Play", command=lambda show = show: play_show(show))
+					button2 = Button(frame, text = "Back", command=lambda show = show: back_show(show))
+					
+					display_widgets.append(label2)
+					display_widgets.append(button1)
+					display_widgets.append(button2)
+					
+					label2.grid(row = grid_x, column = grid_y)
+					button1.grid(row = grid_x, column = grid_y+1)
+					button2.grid(row = grid_x, column = grid_y+2)
+					
 					if (grid_x > (temp_x + 7)) and (grid_y == 3):
 						grid_x += 1
 						grid_y = 0
@@ -71,7 +84,6 @@ class GUI:
 				else: 
 					grid_x += 1
 				grid_y = 0
-				
 
 			
 		#set up window 
@@ -170,16 +182,25 @@ class GUI:
 		canvas = Canvas(scrolling_shows, background= 'white')
 		frame = Frame(canvas, background = 'white')
 		
+		#Idea is to add frame with widgets and delete
+		"""frame2 = Frame(frame, background = 'white', width = 600, height = 300)
+		frame2.pack()
+		frame2.tkraise(frame2)"""
+		
 		scrollbar = Scrollbar(scrolling_shows,orient ="vertical", command = canvas.yview)
 		canvas.configure(yscrollcommand=scrollbar.set)
 		canvas.pack(side="left")
 		scrollbar.pack(side = "right", fill="y")
 		
-		for i in range(0,37):
-			self.backend.add_show("Adventure Time", "https://www.watchcartoononline.io/adventure-time-season-1-episode-1-slumber-party-panic", ["gggggg"])
+		"""for i in range(0,4):
+			self.backend.add_show("Adventure Time", "https://www.watchcartoononline.io/adventure-time-season-1-episode-1-slumber-party-panic", ["gggggg"])"""
+
+		self.backend.add_show("Adventure Time", "https://www.watchcartoononline.io/adventure-time-season-1-episode-1-slumber-party-panic", ["gggggg"])
+		self.backend.add_show("Out There", "https://www.watchcartoononline.io/out-there-episode-2-quest-for-fantasy", ["gggggg"])
+		self.backend.add_show("Exosquad", "https://www.watchcartoononline.io/exosquad-season-1-episode-12-betrayal", ["gggggg"])
+		
+		display_widgets = []
 		set_display_widgets()
-
-
 		
 		#raise selected fram and 
 		def raise_frame(frame):
@@ -215,15 +236,23 @@ class GUI:
 			
 			#add show to list of categories  ticked aswell as general
 			self.backend.add_show(tag_entry.get(), HTTP_entry.get(), categories)
+			set_display_widgets()
 			exit()
 			
 		def add_category():
 			shows = None
 			self.backend.add_category(category_entry.get(), shows)
 			set_check_boxes()
+			set_display_widgets()
 			exit()
 			
 		def play_show(show):
+			webbrowser.open(show._curr_address, new = 2)
+			self.backend.find_next(show)
+			set_display_widgets()
+		
+		#def back_show(show):
+			
 			
 	
 		raise_frame(banner)

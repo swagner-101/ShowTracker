@@ -42,12 +42,12 @@ class BackEnd(GUIBackEndInterface):
 	def add_show(self, title, init_address, categories):
 	
 		#set up initial stuff for show
-		#next_ep = self._analyzer.find_next_ep(init_address)
+		next_ep = self._analyzer.find_next_ep(init_address)
 		episode_num = self._analyzer.find_ep_num(init_address)
 		#add return for none value on search for error
-		new_show = Show(title, init_address, episode_num)
+		new_show = Show(title, init_address, episode_num, next_ep)
 		new_show._addresses.append(new_show._curr_address)
-		#new_show._addresses.append(new_show._next_address)
+		new_show._addresses.append(new_show._next_address)
 		
 		#add show to categories selected
 		self._category_list["General"].to_category_add(new_show)
@@ -63,6 +63,8 @@ class BackEnd(GUIBackEndInterface):
 		
 	def find_next(self, show):
 		temp = show._next_address
+		if show._next_address is None:
+			print('out')
 		show._next_address = self._analyzer.find_next_ep(show._next_address)
 		show._addresses.append(show._next_address)
 		show._curr_address = temp
