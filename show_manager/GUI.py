@@ -56,7 +56,8 @@ class GUI:
 				flag_full = 0
 				for show in self.backend._category_list[category]._shows:
 					grid_x += 1
-					label2 = Label(frame, text = show._title + " episode " + str(show._episode_num))
+					label2 = Label(frame, text = show._title + " season " + str(show._season_num)\
+					+ " episode " + str(show._episode_num))
 					button1 = Button(frame, text = "Play", command=lambda show = show: play_show(show))
 					button2 = Button(frame, text = "Back", command=lambda show = show: back_show(show))
 					
@@ -198,7 +199,7 @@ class GUI:
 		self.backend.add_show("Adventure Time", "https://www.watchcartoononline.io/adventure-time-season-1-episode-1-slumber-party-panic", ["gggggg"])
 		self.backend.add_show("Out There", "https://www.watchcartoononline.io/out-there-episode-2-quest-for-fantasy", ["gggggg"])
 		self.backend.add_show("Exosquad", "https://www.watchcartoononline.io/exosquad-season-1-episode-12-betrayal", ["gggggg"])
-		
+		self.backend.add_show("Game of Thrones", "http://www4.fmovies.io/watch/game-of-thrones-season-3-episode-06-the-climb.html", ["gggggg"])
 		display_widgets = []
 		set_display_widgets()
 		

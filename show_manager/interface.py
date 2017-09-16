@@ -13,4 +13,7 @@ class StorageAndAnalyzer:
 	def find_ep_num(self, url): raise NotImplementedError
 	
 	@abstractmethod
+	def find_season_num(self, url): raise NotImplementedError
+	
+	@abstractmethod
 	def history_scan(self): raise NotImplementedError

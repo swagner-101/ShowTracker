@@ -14,8 +14,13 @@ class HTTPAnalyzer(StorageAndAnalyzer):
 		
 	def find_next_ep(self, url):
 		#take url up to end of episode number and increment ep number
-		broken_list = re.compile('(ep[i\W]+.*?)([1-9]+)', re.IGNORECASE).split(url)
-		url_to_next_base =  broken_list[0] + broken_list[1] + str(int(broken_list[2]) + 1)
+		broken_list = re.compile('(.*//.*?)(/.*)(ep[i\W]+.*?)([1-9]+)', re.IGNORECASE).split(url)
+		
+			
+		url_to_next_base = broken_list[1] + broken_list[2] + \
+		broken_list[3] + str(int(broken_list[4]) + 1)
+		url_to_next_no_base = broken_list[2] + broken_list[3] + str(int(broken_list[4]) + 1)
+		
 		u_agent = 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
 		accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
 		al = 'en-US,en;q=0.8'
@@ -35,21 +40,27 @@ class HTTPAnalyzer(StorageAndAnalyzer):
 		resp = requests.get(url, headers= headers)
 		soup = BeautifulSoup(resp.content, "lxml")
 
+		#Check references from site for matching full address or address without website name
 		url_to_next = None
 		for link in soup.find_all('a', href=True):
 			if re.match(url_to_next_base, link['href']):
 				url_to_next = link['href']
 				break;
+			elif re.match(url_to_next_no_base, link['href']):
+				url_to_next = broken_list[0]+ broken_list[1] + link['href']
+				break;
 				
+		#search for next season if episode could not be found within season
 		if url_to_next == None:
-			broken_list = re.compile('(se[a\W]+.*?)([1-9]+)(.*)(ep[i\W]+.*?)([1-9]+)', re.IGNORECASE).split(url)
+			broken_list = re.compile('(.*//.*?)(/.*)(se[a\W]+.*?)([1-9]+)(.*)(ep[i\W]+.*?)([1-9]+)', re.IGNORECASE).split(url)
+				
+			url_to_next_base =  broken_list[1] + broken_list[2]+ broken_list[3] + str(int(broken_list[4]) + 1) +broken_list[5]\
+			+ broken_list[6] + "1"
+			url_to_next_no_base = broken_list[2]+ broken_list[3] + str(int(broken_list[4]) + 1) +broken_list[5]\
+			+ broken_list[6] + "1"
 			
-			for i in range(0,5):
-				print(broken_list[i])
-			
-			
-			url_to_next_base =  broken_list[0] + broken_list[1] + str(int(broken_list[2]) + 1)\
-			+ broken_list[3] + broken_list[4] + "1"
+			for thing in broken_list:
+				print(thing)
 			
 			print(url_to_next_base)
 		
@@ -57,15 +68,24 @@ class HTTPAnalyzer(StorageAndAnalyzer):
 				if re.match(url_to_next_base, link['href']):
 					url_to_next = link['href']
 					break;
-			
-		return url_to_next
+				elif re.match(url_to_next_no_base, link['href']):
+					url_to_next = broken_list[0]+ broken_list[1] + link['href']
+					break;
+				
+		print(url_to_next)
 	
 	def find_ep_num(self, url):
 		broken_list = re.compile('(ep[i\W]+.*?)([1-9]+)', re.IGNORECASE).split(url)
-		url_to_next =  broken_list[0] + broken_list[1] + str(int(broken_list[2]) + 1)
-		
 		return int(broken_list[2])
 		
+	def find_season_num(self, url):
+		broken_list = re.compile('(se[a\W]+.*?)([1-9]+)', re.IGNORECASE).split(url)
+
+		if len(broken_list) > 1:
+			return int(broken_list[2])
+		else:
+			return 1
+
 	def history_scan(self):
 		data_base = self.find_path()
 		script_dir = os.path.dirname(__file__)

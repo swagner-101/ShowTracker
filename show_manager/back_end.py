@@ -44,8 +44,10 @@ class BackEnd(GUIBackEndInterface):
 		#set up initial stuff for show
 		next_ep = self._analyzer.find_next_ep(init_address)
 		episode_num = self._analyzer.find_ep_num(init_address)
+		season_num = self._analyzer.find_season_num(init_address)
+		print(season_num)
 		#add return for none value on search for error
-		new_show = Show(title, init_address, episode_num, next_ep)
+		new_show = Show(title, init_address, episode_num, season_num, next_ep)
 		new_show._addresses.append(new_show._curr_address)
 		new_show._addresses.append(new_show._next_address)
 		
@@ -63,13 +65,18 @@ class BackEnd(GUIBackEndInterface):
 		
 	def find_next(self, show):
 		temp = show._next_address
-		if show._next_address is None:
-			print('out')
 		show._next_address = self._analyzer.find_next_ep(show._next_address)
+		if show._next_address is None:
+			print('Cant Find')
+			return
 		show._addresses.append(show._next_address)
 		show._curr_address = temp
-		show._episode_num+=1
-		
+		#print(self._analyzer.find_season_num(show._curr_address))
+		if show._season_num != self._analyzer.find_season_num(show._curr_address):
+			show._season_num+=1
+			show._episode_num=1
+		else:
+			show._episode_num+=1
 		
 		
 if __name__ == "__main__":
