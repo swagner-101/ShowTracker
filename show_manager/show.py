@@ -8,3 +8,5 @@ class Show:
 		self._curr_address = curr
 		self._next_address = next
 		
+	def __del__(self):
+		return

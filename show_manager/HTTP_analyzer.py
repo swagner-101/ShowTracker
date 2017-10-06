@@ -12,14 +12,20 @@ class HTTPAnalyzer(StorageAndAnalyzer):
 	def __init__(self):
 		return
 		
-	def find_next_ep(self, url):
+	def find_next_ep(self, url, direction):
 		#take url up to end of episode number and increment ep number
-		broken_list = re.compile('(.*//.*?)(/.*)(ep[i\W]+.*?)([1-9]+)', re.IGNORECASE).split(url)
+		broken_list = re.compile('(.*//.*?)(/.*)(ep[i\W]+.*?)([1-9]+0?)', re.IGNORECASE).split(url)
 		
+		if direction == "FORWARD":
+			add = 1
+		else:
+			add = -1
+			
 			
 		url_to_next_base = broken_list[1] + broken_list[2] + \
-		broken_list[3] + str(int(broken_list[4]) + 1)
-		url_to_next_no_base = broken_list[2] + broken_list[3] + str(int(broken_list[4]) + 1)
+		broken_list[3] + str(int(broken_list[4]) + add)
+		url_to_next_no_base = broken_list[2] + broken_list[3] + str(int(broken_list[4]) + add)
+		
 		
 		u_agent = 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
 		accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
@@ -50,20 +56,17 @@ class HTTPAnalyzer(StorageAndAnalyzer):
 				url_to_next = broken_list[0]+ broken_list[1] + link['href']
 				break;
 				
+				
 		#search for next season if episode could not be found within season
 		if url_to_next == None:
-			broken_list = re.compile('(.*//.*?)(/.*)(se[a\W]+.*?)([1-9]+)(.*)(ep[i\W]+.*?)([1-9]+)', re.IGNORECASE).split(url)
+			broken_list = re.compile('(.*//.*?)(/.*)(se[a\W]+.*?)([0-9]+)(.*)(ep[i\W]+.*?)([1-9]+0?)', re.IGNORECASE).split(url)
 				
-			url_to_next_base =  broken_list[1] + broken_list[2]+ broken_list[3] + str(int(broken_list[4]) + 1) +broken_list[5]\
+			url_to_next_base =  broken_list[1] + broken_list[2]+ broken_list[3] + str(int(broken_list[4]) + add) +broken_list[5]\
 			+ broken_list[6] + "1"
-			url_to_next_no_base = broken_list[2]+ broken_list[3] + str(int(broken_list[4]) + 1) +broken_list[5]\
+			url_to_next_no_base = broken_list[2]+ broken_list[3] + str(int(broken_list[4]) + add) +broken_list[5]\
 			+ broken_list[6] + "1"
 			
-			for thing in broken_list:
-				print(thing)
-			
-			print(url_to_next_base)
-		
+					
 			for link in soup.find_all('a', href=True):
 				if re.match(url_to_next_base, link['href']):
 					url_to_next = link['href']
@@ -72,14 +75,14 @@ class HTTPAnalyzer(StorageAndAnalyzer):
 					url_to_next = broken_list[0]+ broken_list[1] + link['href']
 					break;
 				
-		print(url_to_next)
+		return url_to_next
 	
 	def find_ep_num(self, url):
-		broken_list = re.compile('(ep[i\W]+.*?)([1-9]+)', re.IGNORECASE).split(url)
+		broken_list = re.compile('(ep[i\W]+.*?)([0-9]+)', re.IGNORECASE).split(url)
 		return int(broken_list[2])
 		
 	def find_season_num(self, url):
-		broken_list = re.compile('(se[a\W]+.*?)([1-9]+)', re.IGNORECASE).split(url)
+		broken_list = re.compile('(se[a\W]+.*?)([0-9]+)', re.IGNORECASE).split(url)
 
 		if len(broken_list) > 1:
 			return int(broken_list[2])
@@ -105,6 +108,6 @@ class HTTPAnalyzer(StorageAndAnalyzer):
 if __name__ == "__main__":
 
 	analyzer = HTTPAnalyzer();
-	analyzer.find_next_ep("https://www.watchcartoononline.io/adventure-time-season-8-episode-14-islands-part-8-the-light-cloud")
+	analyzer.find_next_ep("https://www.watchcartoononline.io/rick-and-morty-season-3-episode-7-the-ricklantis-mixup", "FORWARD")
 	#analyzer.history_scan()
 	#print(path)
