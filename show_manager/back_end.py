@@ -9,18 +9,9 @@ class BackEnd(GUIBackEndInterface):
 
 	def __init__(self):
 		self._analyzer = HTTPAnalyzer()
-		self._storage = Storage()
 		self._category_list = dict()
 		self._up_to_date = []
-		self._category_list["New"] = Category("New")
-		self._category_list["General"] = Category("General")
-		self._category_list["fff"] = Category("fff")
-		self._category_list["ggg"] = Category("ggg")
-		self._category_list["gggh"] = Category("gggh")
-		self._category_list["tttt"] = Category("New")
-		self._category_list["gggggg"] = Category("fff")
-		self._category_list["ring"] = Category("ggg")
-		self._category_list["anime"] = Category("gggh")
+		self._storage = Storage(self._category_list, self._up_to_date)
 		
 		#boolean array for settings
 		self._settings = []
@@ -122,15 +113,9 @@ class BackEnd(GUIBackEndInterface):
 			show._episode_num+=1
 		
 		return True
-		
-if __name__ == "__main__":
-	bend = BackEnd()
 	
-	bend.add_show("Adventure Time", "https://www.watchcartoononline.io/adventure-time-season-1-episode-1-slumber-party-panic", ["gggggg"])
-	bend.add_show("Out There", "https://www.watchcartoononline.io/out-there-episode-2-quest-for-fantasy", ["gggggg"])
-	#print(bend._category_list["General"]._shows[1]._curr_address)
-	bend.find_next(bend._category_list["General"]._shows[1])
-	print(bend._category_list["General"]._shows[1]._curr_address)
-	bend.revert_show(bend._category_list["General"]._shows[1])
-	print(bend._category_list["General"]._shows[1]._curr_address)
+	#function to store values and shut down storage
+	def close_DB(self):
+		self._storage.close_DB(self._category_list, self._up_to_date)
+
 	

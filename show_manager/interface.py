@@ -20,3 +20,6 @@ class StorageAndAnalyzer:
 	
 	@abstractmethod
 	def initialize(self): raise NotImplementedError
+	
+	@abstractmethod
+	def close_DB(self, categories, upto_date): raise NotImplementedError

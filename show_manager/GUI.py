@@ -254,11 +254,7 @@ class GUI:
 		canvas.pack(side="left")
 		scrollbar.pack(side = "right", fill="y")
 		
-		self.backend.add_show("Adventure Time", "https://www.watchcartoononline.io/adventure-time-season-1-episode-1-slumber-party-panic", ["gggggg"])
-		self.backend.add_show("Out There", "https://www.watchcartoononline.io/out-there-episode-2-quest-for-fantasy", ["gggggg"])
-		self.backend.add_show("Exosquad", "https://www.watchcartoononline.io/exosquad-season-1-episode-12-betrayal", ["gggggg"])
-		self.backend.add_show("Game of Thrones", "http://www4.fmovies.io/watch/game-of-thrones-season-3-episode-06-the-climb.html", ["gggggg"])
-		self.backend.add_show("Rick and Morty", "https://www.watchcartoononline.io/rick-and-morty-season-3-episode-7-the-ricklantis-mixup", ["gggggg"])
+		#self.backend.add_show("Adventure Time", "https://www.watchcartoononline.io/adventure-time-season-1-episode-1-slumber-party-panic", ["gggggg"])
 		display_widgets = []
 		set_display_widgets("Play")
 		
@@ -360,7 +356,6 @@ class GUI:
 			
 		def check_for_new():
 			tot_index = len(self.backend._up_to_date) - 1
-			print(tot_index)
 			if self.current_uptodate <= tot_index:
 				print("Short wait")
 				show = self.backend._up_to_date[self.current_uptodate]
@@ -376,11 +371,17 @@ class GUI:
 				print("Long wait")
 				self.current_uptodate = 0
 				root.after(240000, check_for_new)
-	
+		
+		#on exit close data base connection
+		def on_closing():
+			self.backend.close_DB()
+			root.destroy()
+
 		raise_frame(banner)
 		raise_frame(scrolling_shows)
 		canvas.create_window((0,0),window=frame,anchor='nw')
 		frame.bind("<Configure>",myfunction)
+		root.protocol("WM_DELETE_WINDOW", on_closing)
 		root.after(self.new_scan_speed, check_for_new)
 		root.mainloop()
 if __name__ == "__main__":

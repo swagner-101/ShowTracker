@@ -27,3 +27,6 @@ class GUIBackEndInterface:
 	
 	@abstractmethod
 	def find_next(self, show): raise NotImplementedError
+	
+	@abstractmethod
+	def close_DB(self): raise NotImplementedError

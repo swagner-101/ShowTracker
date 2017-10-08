@@ -16,17 +16,17 @@ class HTTPAnalyzer(StorageAndAnalyzer):
 		#take url up to end of episode number and increment ep number
 		broken_list = re.compile('(.*//.*?)(/.*)(ep[i\W]+.*?)([1-9]+0?)', re.IGNORECASE).split(url)
 		
+		#decide if searching for episode in behind or ahead of current
 		if direction == "FORWARD":
 			add = 1
 		else:
 			add = -1
 			
-			
 		url_to_next_base = broken_list[1] + broken_list[2] + \
 		broken_list[3] + str(int(broken_list[4]) + add)
 		url_to_next_no_base = broken_list[2] + broken_list[3] + str(int(broken_list[4]) + add)
 		
-		
+		#create headers for crawling
 		u_agent = 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
 		accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
 		al = 'en-US,en;q=0.8'
@@ -77,10 +77,12 @@ class HTTPAnalyzer(StorageAndAnalyzer):
 				
 		return url_to_next
 	
+	#function to retrieve episode number from title
 	def find_ep_num(self, url):
 		broken_list = re.compile('(ep[i\W]+.*?)([0-9]+)', re.IGNORECASE).split(url)
 		return int(broken_list[2])
-		
+	
+	#function to retrieve season number from title
 	def find_season_num(self, url):
 		broken_list = re.compile('(se[a\W]+.*?)([0-9]+)', re.IGNORECASE).split(url)
 
@@ -88,26 +90,3 @@ class HTTPAnalyzer(StorageAndAnalyzer):
 			return int(broken_list[2])
 		else:
 			return 1
-
-	def history_scan(self):
-		data_base = self.find_path()
-		script_dir = os.path.dirname(__file__)
-		print(script_dir)
-		print(data_base)            
-		con = sqlite3.connect(data_base) #Connect to the database
-		c = con.cursor()
-		c.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name") #Change this to your prefered query
-		print(c.fetchall())
-		
-	def find_path(self):
-		User_profile = os.environ["HOME"]
-		History_path = "/Users/scottwagner/Library/Application\ Support/Firefox/Profiles/oxi0ps92.default/places.sqlite"
-		return History_path
-		
-		
-if __name__ == "__main__":
-
-	analyzer = HTTPAnalyzer();
-	analyzer.find_next_ep("https://www.watchcartoononline.io/rick-and-morty-season-3-episode-7-the-ricklantis-mixup", "FORWARD")
-	#analyzer.history_scan()
-	#print(path)
