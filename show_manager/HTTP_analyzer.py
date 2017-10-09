@@ -74,7 +74,7 @@ class HTTPAnalyzer(StorageAndAnalyzer):
 				elif re.match(url_to_next_no_base, link['href']):
 					url_to_next = broken_list[0]+ broken_list[1] + link['href']
 					break;
-				
+					
 		return url_to_next
 	
 	#function to retrieve episode number from title

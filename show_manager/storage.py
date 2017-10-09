@@ -13,22 +13,24 @@ class Storage(StorageAndAnalyzer):
 		for row in self.c.execute('SELECT * FROM Categories'):
 			categories[row[0]] = Category(row[0])
 		
-		#initialize shows with all adresses and add to correspond categories
-		for row in self.c.execute('SELECT * FROM Shows ORDER BY title'):
-			new_show = Show(row[0], row[3], row[1], row[2], row[4])
+		self.c.execute('SELECT * FROM Shows')
+		rows = self.c.fetchall()
 			
+		#initialize shows with all adresses and add to correspond categories
+		for row in rows:
+			new_show = Show(row[0], row[3], row[1], row[2], row[4])
 			#add addresses related to show to addresses
 			title_cat = (row[0],)
-			for row2 in self.c.execute('SELECT * FROM addresses WHERE show = ?', title_cat):
+			for row2 in self.c.execute('SELECT * FROM addresses WHERE show = (?)', title_cat):
 				new_show._addresses.append(row2[0])
 			
 			#add show to any categories it is associated with including upto_date list
-			for row3 in self.c.execute('SELECT * FROM Has WHERE show_name = ?', title_cat):
+			for row3 in self.c.execute('SELECT * FROM Has WHERE show_name = (?)', title_cat):
 				if row3[0] == "upto_date":
 					upto_date.append(new_show)
 				else:
 					categories[row3[0]].to_category_add(new_show)
-	
+			
 	
 		
 	def close_DB(self, categories, upto_date):

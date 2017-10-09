@@ -258,9 +258,6 @@ class GUI:
 		display_widgets = []
 		set_display_widgets("Play")
 		
-		for show in self.backend._category_list["General"]._shows:
-			self.backend._up_to_date.append(show)
-		
 		
 		#raise frame
 		def raise_frame(frame):
